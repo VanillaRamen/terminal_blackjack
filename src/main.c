@@ -4,40 +4,48 @@
 #include <string.h>
 
 
+typedef struct blackjack_hand hand;
+struct blackjack_hand {
+    int hand;
+    int aces;
+};
+
+
 char gethitstand();
-void hit(int*, int*);
+void hit(hand*);
 char playagain();
 
 
 int main() {
     /* START */
+    hand h;
     start:
-    int hand = 0;
-    int aces = 0;
+    h.hand = 0;
+    h.aces = 0;
     srand(time(NULL));
     char hitstand;
 
     /* INITIAL DRAW TWO*/
-    hit(&hand, &aces); hit(&hand, &aces);
+    hit(&h); hit(&h);
 
     /* HITSTAND LOOP */
     while (1) {
-        printf("hand:   (%d)\naces:   (%d)\n", hand, aces);
+        printf("hand:   (%d)\naces:   (%d)\n", h.hand, h.aces);
         hitstand = gethitstand();
 
         if (hitstand == 'h') {
-            hit(&hand, &aces);
+            hit(&h);
         } else break; // stand
 
-        if (hand >= 21) break; // blackjack or bust
+        if (h.hand >= 21) break; // blackjack or bust
     }
 
     /* STAND OR BUST */
-    if (hand > 21) {
-        printf("bust! %d\n", hand);
+    if (h.hand > 21) {
+        printf("bust! %d\n", h.hand);
     } else {
-        if (hand == 21) printf("super!! ");
-        printf("you made %d!\n", hand);
+        if (h.hand == 21) printf("super!! ");
+        printf("you made %d!\n", h.hand);
     }
 
     /* PLAY AGAIN? */
@@ -47,22 +55,22 @@ int main() {
 
 
 /* HIT ME */
-void hit(int* h, int* a) {
+void hit(hand* h) {
     int v = rand() % 13 + 1;
     if (v == 1) {
         printf("+11 (ace!)\n");
-        *a += 1;
-        *h += 11;
+        h->aces += 1;
+        h->hand += 11;
     } else {
         if (v > 10) v = 10;
         printf("+%d\n", v);
-        *h += v;
+        h->hand += v;
     }
 
-    while (*h > 21 && *a) {
+    while (h->hand > 21 && h->aces) {
         printf("-10 (used ace)\n");
-        *h -= 10;
-        *a -= 1;
+        h->hand -= 10;
+        h->aces -= 1;
     }
 }
 
